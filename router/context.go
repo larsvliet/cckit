@@ -21,6 +21,8 @@ type (
 		Args() InterfaceMap
 		Arg(string) interface{}
 		ArgString(string) string
+		ArgInt(string) int
+		ArgUint64(string) uint64
 		ArgBytes(string) []byte
 		SetArg(string, interface{})
 		Get(string) interface{}
@@ -90,6 +92,16 @@ func (c *context) ArgString(name string) string {
 	return out
 }
 
+func (c *context) ArgInt(name string) int {
+	out, _ := c.Arg(name).(int)
+	return out
+}
+
+func (c *context) ArgUint64(name string) uint64 {
+	out, _ := c.Arg(name).(uint64)
+	return out
+}
+
 func (c *context) ArgBytes(name string) []byte {
 	out, _ := c.Arg(name).([]byte)
 	return out
@@ -102,13 +114,14 @@ func (c *context) Set(key string, val interface{}) {
 	c.store[key] = val
 }
 
+func (c *context) Get(key string) interface{} {
+	return c.store[key]
+}
+
 func (c *context) SetEvent(name string, payload interface{}) error {
 	bb, err := convert.ToBytes(payload)
 	if err != nil {
 		return err
 	}
 	return c.stub.SetEvent(name, bb)
-}
-func (c *context) Get(key string) interface{} {
-	return c.store[key]
 }
